@@ -9,6 +9,39 @@ $id = $_POST['id'] ?? '';
 if($act == "set_done") {
     $sql = "UPDATE task SET status_id=2 WHERE id='$id'";
     $query = mysqli_query($conn, $sql);
+}else if($act == "edit") {
+    $sql = "select * from task where id='$id'";
+    $query = mysqli_query($conn, $sql);
+    $result = mysqli_fetch_array($query);
+
+    $task_id = $result['id']; 
+    $task_name = $result['task_name']; 
+    $task_date = $result['task_date']; 
+    $task_desc = $result['task_desc']; 
+    $priority_id = $result['priority_id']; 
+    $user_id = $result['user_id']; 
+    $category_id = $result['category_id']; 
+    $reminder_id = $result['reminder_id']; 
+    $status_id = $result['status_id']; 
+
+    echo "|".$task_id."|".$task_name."|".$task_date."|".$task_desc."|".$priority_id."|".$user_id."|".$category_id."|".$reminder_id."|".$status_id."|";
+
+    $sql = "UPDATE task SET task_name = '$task_name', task_date = '$task_date', task_desc = '$task_desc', priority_id = '$priority_id', user_id = '$user_id', category_id = '$category_id', reminder_id = '$reminder_id', status_id = '$status_id' WHERE id = '$task_id'";
+
+    mysqli_query($conn, $sql);
+
+}else if($act == "add"){
+    $task_id = $_REQUEST['id'];
+    $task_name = $_POST['task_name'];
+    $task_date = $_POST['task_date'];
+    $task_desc = $_POST['task_desc'];
+    $priority_id = $_POST['priority_id'];
+    $user_id = $_SESSION['id'];
+    $category_id = $_POST['category_id'];
+    $reminder_id = $_POST['reminder_id'];
+    $status_id = 1;
+    $sql = "INSERT INTO task(id,task_name,task_date,task_desc,priority_id,user_id,category_id,reminder_id,status_id) VALUES ('$task_id','$task_name','$task_date','$task_desc','$priority_id','$user_id','$category_id','$reminder_id','$status_id')";
+        mysqli_query($conn, $sql);
 }else if($act == "set_undone") {
     $sql = "UPDATE task SET status_id=1 WHERE id='$id'";
     $query = mysqli_query($conn, $sql);
@@ -44,7 +77,7 @@ if($act == "set_done") {
             </div>
 
             <div class="col-2" style="margin-top:25px;">
-                <input type="button" name="edit_task" class="logout" id="edit_task<?php echo $task_id; ?>" value="Edit" onclick="edit_task(<?php echo"'$task_id','$task_name','$task_date','$task_desc','$priority_id','$user_id','$category_id','$reminder_id','$status_id'"?>)">
+                <input type="button" name="edit_task" class="logout" id="edit_task<?php echo $task_id; ?>" value="Edit" onclick="edit_task(<?php echo $task_id;?>)">
             </div>
 
             <div class="col-1">

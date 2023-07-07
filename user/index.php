@@ -27,8 +27,8 @@ include "../config/connection.php";
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <!-- <body class="body" style="background-image:url('assets/images/desktop1.png');background-size: cover;"> -->
-<!-- <body class="body"> -->
-<body>
+<body class="body">
+<!-- <body> -->
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-6">		
@@ -63,7 +63,7 @@ include "../config/connection.php";
 						<div class="col-7"></div>
 						<div class="col-1"></div>
 						<div class="col-1">
-							<button type="button" class="plus_button" id="myBtn">
+							<button type="button" class="plus_button" id="myBtn" onclick="add_task()">
 								<i class="fa fa-plus"></i>
 							</button>
 						</div>
@@ -74,7 +74,7 @@ include "../config/connection.php";
 					  	<div class="modal-content" style="width: 60%;margin: auto;">
 						    <div class="modal-header">
 						      <span class="close">&times;</span>
-						      <h2>Add Task</h2>
+						      <h2 id="title_task">Add Task</h2>
 						    </div>
 						    <form method="POST" action="crud_file.php">
 							    <div class="modal-body">
@@ -94,8 +94,8 @@ include "../config/connection.php";
 	
 							      	<tr>
 							      		<td>
-											<select class="form-select" id="sel1" name="priority_id" style="margin: 5px;" >
-										    	<option>Priority</option>
+											<select class="form-select" id="priority_id" name="priority_id" style="margin: 5px;" >
+										    	<option value="title_priority">Priority</option>
 										    	<?php 
 										    	while($num1 = mysqli_fetch_assoc($query1)){
 													$id_priority = $num1['id'];
@@ -117,8 +117,8 @@ include "../config/connection.php";
 	
 							      	<tr>
 							      		<td>
-							      			<select class="form-select" id="sel2" name="category_id" style="margin:5px;">
-										    	<option>Category</option>
+							      			<select class="form-select" id="category_id" name="category_id" style="margin:5px;">
+										    	<option value="title_category">Category</option>
 										    	<?php 
 										    	while($num2 = mysqli_fetch_array($query2)){
 													$id_category = $num2['id'];
@@ -135,8 +135,8 @@ include "../config/connection.php";
 							      	<tr>
 							      		<td>
 							      			<!-- harus revisi -->
-							      			<select class="form-select" id="sel3" name="reminder_id" style="margin:5px;">
-										    	<option>Reminder</option>
+							      			<select class="form-select" id="reminder_id" name="reminder_id" style="margin:5px;">
+										    	<option value="title_reminder">Reminder</option>
 										    	<?php 
 										    	while($num3 = mysqli_fetch_array($query3)){
 													$id_reminder = $num3['id'];
@@ -160,7 +160,7 @@ include "../config/connection.php";
 							    </div>
 							    
 							    <div class="modal-footer" style="background-color:#303030;">
-							      <input type="submit" name="tambah" class="tambah" id="tambah" value="ADD">
+							      <input type="submit" name="tambah" class="tambah" id="tambah" value="ADD" onclick="insert_task()">
 							    </div>
 						    </form>
 					  	</div>
