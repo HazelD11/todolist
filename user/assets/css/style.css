@@ -132,3 +132,14 @@ div .todolist .row {
 .form-control {
 	margin: 5px;
 }
+
+.checkme {
+  -webkit-appearance: none; /* Remove default styling */
+  -moz-appearance: none;
+  appearance: none;
+  pointer-events: none; /* Disable pointer events */
+}
+
+.checkme:checked {
+  background-color: blue; /* Set the desired background color */
+}

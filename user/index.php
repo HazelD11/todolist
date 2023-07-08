@@ -60,7 +60,8 @@ include "../config/connection.php";
 			<div class="todolist">
 					<div class="row mt-2 mb-5">
 						<div class="col-3"><h5>Your Task</h5></div>
-						<div class="col-7"></div>
+						<div class="col-5"></div>
+						<div class="col-2"><button onclick="report()" class="logout">Report</button></div>
 						<div class="col-1"></div>
 						<div class="col-1">
 							<button type="button" class="plus_button" id="myBtn" onclick="add_task()">
@@ -74,9 +75,9 @@ include "../config/connection.php";
 					  	<div class="modal-content" style="width: 60%;margin: auto;">
 						    <div class="modal-header">
 						      <span class="close">&times;</span>
-						      <h2 id="title_task">Add Task</h2>
+						      <h2>Add Task</h2>
 						    </div>
-						    <form method="POST" action="crud_file.php">
+						    <form method="POST">
 							    <div class="modal-body">
 							      <table  style="margin: auto;width: 80%;">
 
@@ -95,7 +96,7 @@ include "../config/connection.php";
 							      	<tr>
 							      		<td>
 											<select class="form-select" id="priority_id" name="priority_id" style="margin: 5px;" >
-										    	<option value="title_priority">Priority</option>
+										    	<option>Priority</option>
 										    	<?php 
 										    	while($num1 = mysqli_fetch_assoc($query1)){
 													$id_priority = $num1['id'];
@@ -118,7 +119,7 @@ include "../config/connection.php";
 							      	<tr>
 							      		<td>
 							      			<select class="form-select" id="category_id" name="category_id" style="margin:5px;">
-										    	<option value="title_category">Category</option>
+										    	<option>Category</option>
 										    	<?php 
 										    	while($num2 = mysqli_fetch_array($query2)){
 													$id_category = $num2['id'];
@@ -136,7 +137,7 @@ include "../config/connection.php";
 							      		<td>
 							      			<!-- harus revisi -->
 							      			<select class="form-select" id="reminder_id" name="reminder_id" style="margin:5px;">
-										    	<option value="title_reminder">Reminder</option>
+										    	<option>Reminder</option>
 										    	<?php 
 										    	while($num3 = mysqli_fetch_array($query3)){
 													$id_reminder = $num3['id'];
@@ -160,7 +161,7 @@ include "../config/connection.php";
 							    </div>
 							    
 							    <div class="modal-footer" style="background-color:#303030;">
-							      <input type="submit" name="tambah" class="tambah" id="tambah" value="ADD" onclick="insert_task()">
+							      <input type="button" name="tambah" class="tambah" id="tambah" value="ADD" onclick="insert_task()">
 							    </div>
 						    </form>
 					  	</div>
