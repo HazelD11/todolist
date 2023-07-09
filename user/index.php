@@ -75,7 +75,7 @@ include "../config/connection.php";
 					  	<div class="modal-content" style="width: 60%;margin: auto;">
 						    <div class="modal-header">
 						      <span class="close">&times;</span>
-						      <h2>Add Task</h2>
+						      <h2 id="title_task">Add Task</h2>
 						    </div>
 						    <form method="POST">
 							    <div class="modal-body">
@@ -96,7 +96,7 @@ include "../config/connection.php";
 							      	<tr>
 							      		<td>
 											<select class="form-select" id="priority_id" name="priority_id" style="margin: 5px;" >
-										    	<option>Priority</option>
+										    	<option value="title_priority">Priority</option>
 										    	<?php 
 										    	while($num1 = mysqli_fetch_assoc($query1)){
 													$id_priority = $num1['id'];
@@ -119,7 +119,7 @@ include "../config/connection.php";
 							      	<tr>
 							      		<td>
 							      			<select class="form-select" id="category_id" name="category_id" style="margin:5px;">
-										    	<option>Category</option>
+										    	<option value="title_category">Category</option>
 										    	<?php 
 										    	while($num2 = mysqli_fetch_array($query2)){
 													$id_category = $num2['id'];
@@ -137,7 +137,7 @@ include "../config/connection.php";
 							      		<td>
 							      			<!-- harus revisi -->
 							      			<select class="form-select" id="reminder_id" name="reminder_id" style="margin:5px;">
-										    	<option>Reminder</option>
+										    	<option value="title_reminder">Reminder</option>
 										    	<?php 
 										    	while($num3 = mysqli_fetch_array($query3)){
 													$id_reminder = $num3['id'];

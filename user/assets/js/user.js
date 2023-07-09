@@ -154,15 +154,15 @@ function update_task(){
 
 function add_task(){
   modal.style.display = "block";
-      $("title_task").html("Add Task");
-      $("id").val("");
-      $("task_name").val("");
-      $("task_date").val("");
-      $("task_desc").val("");
-      $("priority_id").val("title_priority");
-      $("category_id").val("title_category");
-      $("reminder_id").val("title_reminder");
-      $("status_id").val("");
+      $("#title_task").html("Add Task");
+      $("#id").val("");
+      $("#task_name").val("");
+      $("#task_date").val("");
+      $("#task_desc").val("");
+      $("#priority_id").val("title_priority");
+      $("#category_id").val("title_category");
+      $("#reminder_id").val("title_reminder");
+      $("#status_id").val("");
     // document.getElementById("id").value = '';
     // document.getElementById("task_name").value = '';
     // document.getElementById("task_date").value = '';
