@@ -22,6 +22,7 @@ function delete_task(task_id) {
     success: function(result) {
       get_data();
       completed_tasks();
+      expired_task();
     }
   });
 }
@@ -147,17 +148,30 @@ function update_task(){
     success: function(result) {   
       get_data();
       completed_tasks();
+      expired_task();
       modal.style.display = "none";   
     }
   });
 }
 
 function add_task(){
+  const date = new Date();
+
+  let day = date.getDate();
+  let month = date.getMonth() + 1;
+  let year = date.getFullYear();
+  if(month < 10){
+    month = "0"+month;
+    // return month;
+  }
+  // This arrangement can be altered based on how we want the date's format to appear.
+  let currentDate = `${year}-${month}-${day}`;
   modal.style.display = "block";
       $("#title_task").html("Add Task");
+      $("#tambah").val("ADD");
       $("#id").val("");
       $("#task_name").val("");
-      $("#task_date").val("");
+      $("#task_date").val(currentDate);
       $("#task_desc").val("");
       $("#priority_id").val("title_priority");
       $("#category_id").val("title_category");
@@ -216,26 +230,28 @@ function insert_task(){
     success: function( result ) {
       get_data();
       completed_tasks();
+      expired_task();
       modal.style.display = "none";
-      
     }
   });  
-
-
 }
 
 function check_task(task_id){
+  var user_exp = $("#user_exp").html();
+  console.log(user_exp);
   $.ajax({
     url: 'sv_task.php',
     method: 'POST',
     data: {
+      user_exp: user_exp,
       id: task_id,
       act: 'set_done'
     },
     success: function( result ) {
       get_data();
       completed_tasks();
-      
+      load_pet();
+      expired_task();
     }
   });  
 }
@@ -264,6 +280,34 @@ function uncheck_task(task_id){
     success: function( result ) {
       get_data();
       completed_tasks();
+      expired_task();
+      load_pet();
+    }
+  });
+}
+
+function expired_task(){
+  $.ajax({
+    url: 'sv_task.php',
+    method: 'POST',
+    data: {
+      act: 'expired'
+    },
+    success: function( result ) {
+      $("#expired_tasks").html( result );
+    }
+  });
+}
+
+function load_pet(){
+  $.ajax({
+    url: 'sv_task.php',
+    method: 'POST',
+    data: {
+      act: 'pets_loader'
+    },
+    success: function(result) {
+      $("#pet_loader").html( result );
     }
   });
 }
@@ -281,16 +325,64 @@ function completed_tasks(){
   });
 }
 
+function edit_profile(){
+  $.ajax({
+    url: 'sv_profile.php',
+    method: 'POST',
+    data: {
+      act: 'edit_profile'
+    },
+    success: function(result) {
+      var data = result.split("|");
+      
+      $("#profile_id").val(data[1]);
+      $("#profile_name").val(data[2]);
+      $("#profile_email").val(data[3]);
+      $("#profile_pict").val(data[4]);
+      
+      modal_profile.style.display = "block";
+       
+    }
+  });
+}
+function update_profile(id){
+  var id = $("#profile_id").val();
+  var profile_name = $("#profile_name").val();
+  var profile_email = $("#profile_email").val();
+  var profile_pict = $("#profile_pict")[0].files[0];
 
-
+  fd = new FormData();
+  fd.append('id', id);
+  fd.append('profile_name', profile_name);
+  fd.append('profile_email', profile_email);
+  fd.append('profile_pict', profile_pict);
+  fd.append('act', 'update_profile');
+  
+  $.ajax({
+    url: 'sv_profile.php',
+    method: 'POST',
+    data: fd,
+    contentType: false,
+    processData: false,
+    success: function(result) {   
+      get_data();
+      completed_tasks();
+      expired_task();
+      modal_profile.style.display = "none";
+      // window.location = "logout.php";
+    }
+  });
+}
 // Get the modal
 var modal = document.getElementById("myModal");
+var modal_profile = document.getElementById("profileModal");
 
 // Get the button that opens the modal
 // var btn = document.getElementById("myBtn");
 
 // Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
+var span2 = document.getElementsByClassName("close_profile")[0];
 
 // When the user clicks the button, open the modal 
 // btn.onclick = function() {
@@ -303,9 +395,19 @@ span.onclick = function() {
   modal.style.display = "none";
 }
 
+span2.onclick = function() {
+  modal_profile.style.display = "none";
+}
+// span.onclick = function() {
+//   modal_profile.style.display = "none";
+// }
+
 // When the user clicks anywhere outside of the modal, close it
 window.onclick = function(event) {
   if (event.target == modal) {
     modal.style.display = "none";
+  }
+  if (event.target == modal_profile) {
+    modal_profile.style.display = "none";
   }
 }

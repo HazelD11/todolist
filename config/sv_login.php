@@ -20,11 +20,15 @@ if(isset($_POST['login'])){
             $status = $row['status'];
             $id = $row['id'];
             $username = $row['username'];
+            $fullname = $row['fullname'];
+            $pet_id = $row['pet_id'];
             $img = $row['img'];
             
             $_SESSION['id'] = $id;
             $_SESSION['email'] = $email;
             $_SESSION['username'] = $username;
+            $_SESSION['fullname'] = $fullname;
+            $_SESSION['pet_id'] = $pet_id;
             $_SESSION['img'] = $img;
             if ($status == "admin") {
             // User is an admin (status = 1)

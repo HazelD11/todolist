@@ -4,9 +4,11 @@ include "../config/connection.php";
     $user_id = $_SESSION['id'];
     $email = $_SESSION['email'];
     $username = $_SESSION['username'];
+    $fullname = $_SESSION['fullname'];
     $img = $_SESSION['img'];
+    $pet_id = $_SESSION['pet_id'];
     
-    $sql1 = "SELECT * FROM priority";
+    $sql1 = "SELECT * FROM tbpriority";
 	$query1 = mysqli_query($conn,$sql1);
  	
  	$sql2 = "SELECT * FROM category";
@@ -14,7 +16,7 @@ include "../config/connection.php";
  	
  	$sql3 = "SELECT * FROM reminder";
 	$query3 = mysqli_query($conn,$sql3);
- 
+	
 ?>
 
 <!DOCTYPE html>
@@ -37,21 +39,59 @@ include "../config/connection.php";
 				<div class="col-12">
 					<div class="d-flex flex-row bd-highlight" style="margin-top:4.4%;margin-left: 2.9%;">  
 					  <div class="p-2 bd-highlight">
-					  	<img src="assets/images/<?php echo $img;?>" class="profile_pict">
+					  	<img src="assets/images/<?php echo $img;?>" class="profile_pict show_profile_pict" id="show_profile_pict" name="show_profile_pict">
+						<!-- <h1><?php echo $pet_id;?></h1> -->
 					  </div>
 					  <div class="p-2 bd-highlight">
-					  	<h4><?php echo $username;?></h4>
-					  	<span><?php echo $email;?></span>
+					  	<h4 id="show_profile_fullname" name="show_profile_fullname"><?php echo $fullname;?></h4>
+					  	<span id="show_profile_email" name="show_profile_email"><?php echo $email;?></span>
+					  	<span><button type="button" class="logout" id="edit_profile" onclick="edit_profile()">Edit Profile</button></span>
 					  	<span><button type="button" class="logout" onclick="logout()">Logout</button></span>
 					  </div>
-					</div>					
+					</div>
+					
+					<div id="profileModal" class="modal">
+					<!-- Modal content -->
+					  	<div class="modal-content" style="width: 60%;margin: auto;">
+						    <div class="modal-header">
+						      <span class="close_profile">&times;</span>
+						      <h2>Edit Profile</h2>
+						    </div>
+						    <form method="POST">
+							    <div class="modal-body">
+							      <table  style="margin: auto;width: 80%;">
+
+							      	<tr>
+							      		<td><input type="hidden" name="profile_id" class="profile_id form-control" id="profile_id" value=""></td>
+							      	</tr>
+	
+							      	<tr>
+							      		<td><input type="text" name="profile_name" class="profile_name form-control" id="profile_name" placeholder="Name" value=""></td>
+							      	</tr>
+	
+							      	<tr>
+							      		<td><input type="email" name="profile_email" class="profile_email form-control" id="profile_email" placeholder="Email" value=""></td>
+							      	</tr>
+
+									  <tr>
+							      		<td><input type="file" name="profile_pict" class="profile_pict form-control" id="profile_pict" value=""></td>
+							      	</tr>
+	
+							      	
+							      </table>
+							    </div>
+							    
+							    <div class="modal-footer" style="background-color:#303030;">
+							      <input type="button" name="edit_profile" class="edit_profile tambah" id="edit_profile" value="Edit Profile" onclick="update_profile(<?php echo $user_id;?>)">
+							    </div>
+						    </form>
+					  	</div>
+					</div>
 				</div>
 			</div>
 
-			<div class="row" style="margin-top: 20%;">
-				<div class="col-12" style="width:60%;margin: auto;">
-					<img src="assets/images/icon1.png">
-				</div>
+			<div id="pet_loader">
+				
 			</div>
 
 		</div>
@@ -90,7 +130,7 @@ include "../config/connection.php";
 							      	</tr>
 	
 							      	<tr>
-							      		<td><input type="date" name="task_date" class="task-date form-control" id="task_date" value=""></td>
+							      		<td><input type="date" name="task_date" class="task_date form-control" id="task_date" value=""></td>
 							      	</tr>
 	
 							      	<tr>
@@ -166,6 +206,14 @@ include "../config/connection.php";
 						    </form>
 					  	</div>
 					</div>
+					
+					<div class="row">
+						<div class="col-6"><h6>EXPIRED TASK</h6></div>
+					</div>
+
+					<div id="expired_tasks">
+						<font color="#FEFEFE">Loading . . . . . . . . . . .</font>
+					</div>
 
 					<div class="row">
 						<div class="col-6"><h6>ACTIVE TASK</h6></div>
@@ -194,8 +242,10 @@ include "../config/connection.php";
 
 <script>
     $(document).ready(function() {
+		load_pet();
         get_data();
         completed_tasks();
+		expired_task();
     });
 </script>
 </body>
