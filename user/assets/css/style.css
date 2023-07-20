@@ -98,7 +98,7 @@ div .todolist .row {
 }
 
 /* The Close Button */
-.close {
+.close,.close_profile,.close_remind_menu,.close_AEreminder {
   color: white;
   float: right;
   font-size: 28px;
@@ -106,7 +106,13 @@ div .todolist .row {
 }
 
 .close:hover,
-.close:focus {
+.close:focus,
+.close_profile:hover,
+.close_profile:focus,
+.close_remind_menu:hover,
+.close_remind_menu:focus,
+.close_AEreminder:hover,
+.close_AEreminder:focus {
   color: #FEFEFE;
   text-decoration: none;
   cursor: pointer;
@@ -142,4 +148,22 @@ div .todolist .row {
 
 .checkme:checked {
   background-color: blue; /* Set the desired background color */
+}
+
+.select_pet:hover {
+  background-color: #EFEFEF;
+  border: 3px solid #EFEFEF;
+  cursor: pointer;
+
+}
+
+.selected {
+  
+  border: 2px solid white;
+  
+  cursor: pointer;
+
+  -webkit-box-shadow: 0px 0px 16px 0px #EFEFEF;
+  -moz-box-shadow: 0px 0px 16px 0px #EFEFEF;
+  box-shadow: 0px 0px 16px 0px #EFEFEF;
 }

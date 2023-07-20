@@ -2,11 +2,10 @@
 include "../config/security.php";
 include "../config/connection.php";
     $user_id = $_SESSION['id'];
-    $email = $_SESSION['email'];
-    $username = $_SESSION['username'];
-    $fullname = $_SESSION['fullname'];
-    $img = $_SESSION['img'];
-    $pet_id = $_SESSION['pet_id'];
+    // $email = $_SESSION['email'];
+    // $username = $_SESSION['username'];
+    // $fullname = $_SESSION['fullname'];
+    // $img = $_SESSION['img'];
     
     $sql1 = "SELECT * FROM tbpriority";
 	$query1 = mysqli_query($conn,$sql1);
@@ -16,6 +15,16 @@ include "../config/connection.php";
  	
  	$sql3 = "SELECT * FROM reminder";
 	$query3 = mysqli_query($conn,$sql3);
+
+	$sql4 = "SELECT * FROM pet";
+	$query4 = mysqli_query($conn,$sql4);
+
+	$sql5 = "SELECT * FROM task WHERE status_id = 1";
+	$query5 = mysqli_query($conn,$sql5);
+
+	$sql6 = "SELECT * FROM ringtone";
+	$query6 = mysqli_query($conn,$sql6);
+
 	
 ?>
 
@@ -31,25 +40,22 @@ include "../config/connection.php";
 <!-- <body class="body" style="background-image:url('assets/images/desktop1.png');background-size: cover;"> -->
 <body class="body">
 <!-- <body> -->
+<div id="check_reminder" style="display: none;">
+
+</div>
+	
 <div class="container-fluid">
 	<div class="row">
 		<div class="col-6">		
 			
 			<div class="row">
 				<div class="col-12">
-					<div class="d-flex flex-row bd-highlight" style="margin-top:4.4%;margin-left: 2.9%;">  
-					  <div class="p-2 bd-highlight">
-					  	<img src="assets/images/<?php echo $img;?>" class="profile_pict show_profile_pict" id="show_profile_pict" name="show_profile_pict">
-						<!-- <h1><?php echo $pet_id;?></h1> -->
-					  </div>
-					  <div class="p-2 bd-highlight">
-					  	<h4 id="show_profile_fullname" name="show_profile_fullname"><?php echo $fullname;?></h4>
-					  	<span id="show_profile_email" name="show_profile_email"><?php echo $email;?></span>
-					  	<span><button type="button" class="logout" id="edit_profile" onclick="edit_profile()">Edit Profile</button></span>
-					  	<span><button type="button" class="logout" onclick="logout()">Logout</button></span>
-					  </div>
+<!-- show profile -->
+					<div class="d-flex flex-row bd-highlight" style="margin-top:4.4%;margin-left: 2.9%;" id="user_profile">  
+					  
 					</div>
-					
+
+<!-- profile modal start  -->
 					<div id="profileModal" class="modal">
 					<!-- Modal content -->
 					  	<div class="modal-content" style="width: 60%;margin: auto;">
@@ -73,11 +79,44 @@ include "../config/connection.php";
 							      		<td><input type="email" name="profile_email" class="profile_email form-control" id="profile_email" placeholder="Email" value=""></td>
 							      	</tr>
 
+									<tr>
+							      		<td><input type="password" name="old_password" class="old_password form-control" id="old_password" placeholder="Old Password" value=""></td>
+							      	</tr>
+
 									  <tr>
+							      		<td><input type="password" name="new_password" class="new_password form-control" id="new_password" placeholder="New Password" value=""></td>
+							      	</tr>
+
+									  <tr>
+							      		<td><input type="password" name="confirm_new_password" class="confirm_new_password form-control" id="confirm_new_password" placeholder="Confirm New Password" value=""></td>
+							      	</tr>
+
+									<tr>
 							      		<td><input type="file" name="profile_pict" class="profile_pict form-control" id="profile_pict" value=""></td>
 							      	</tr>
 	
-							      	
+							      	<tr>
+										<td>
+											<div class="row" style="margin: 5px;" >
+											<input type="hidden" name="pet_id" class="pet_id form-control" id="pet_id" value="">
+											<h3 style="color: #121212;"><b>Pick Your Pet</b></h3>
+										    	<?php 
+										    	while($num4 = mysqli_fetch_array($query4)){
+													$id_pet = $num4['id'];
+													$pet_name = $num4['pet_name'];
+													$demo_img = $num4['demo_img'];
+										    	?>
+														<button type="button" id="pet_card_<?php echo $id_pet;?>" class="col-3 select_pet" style="background-color: #303030;margin-left:15px;margin-top:15px;border-radius:10px;" onclick="select_pet(<?php echo $id_pet;?>)">
+															<img src="assets/images/default/<?php echo $demo_img;?>" width="140px" style="margin-top:15px;margin-bottom:5px;border-radius:5px;">
+															<h5 style="text-align: center;color:#FEFEFE;"><?php echo $pet_name;?></h5>
+														</button>
+										    		<!-- <option id="<?php echo $pet_name;?>" name="<?php echo $pet_name;?>" value="<?php echo $id_pet;?>"><?php echo $pet_name;?></option> -->
+										    	<?php 
+										    	}
+										    	?>
+										    </div>
+										</td>
+									</tr>
 							      </table>
 							    </div>
 							    
@@ -87,22 +126,26 @@ include "../config/connection.php";
 						    </form>
 					  	</div>
 					</div>
+<!-- profile modal end -->
 				</div>
 			</div>
 
+<!-- pet loader start-->
 			<div id="pet_loader">
 				
 			</div>
+<!-- pet loader end -->
 
 		</div>
 
+<!-- task menu -->
 		<div class="col-6">
 			<div class="todolist">
 					<div class="row mt-2 mb-5">
 						<div class="col-3"><h5>Your Task</h5></div>
-						<div class="col-5"></div>
-						<div class="col-2"><button onclick="report()" class="logout">Report</button></div>
-						<div class="col-1"></div>
+						<div class="col-2"></div>
+						<div class="col-3"><button type="button" onclick="report()" class="logout">Filter Task</button></div>
+						<div class="col-3"><button type="button" onclick="remind_menu()" class="logout">Remind Me</button></div>
 						<div class="col-1">
 							<button type="button" class="plus_button" id="myBtn" onclick="add_task()">
 								<i class="fa fa-plus"></i>
@@ -110,6 +153,103 @@ include "../config/connection.php";
 						</div>
 					</div>
 
+<!-- show reminder menu start -->
+					<div id="remind_menu" class="modal">
+						<div class="modal-content" style="width: 60%;margin: auto;">
+						    <div class="modal-header">
+						      <span class="close_remind_menu">&times;</span>
+						      <h2 id="title_remind">Remind Me</h2>
+							  <input type="button" name="add_reminder" class="add_reminder logout" id="add_reminder" value="ADD REMINDER" onclick="add_reminder()">
+						    </div>
+
+							<div class="modal-body">
+								<span id="reminder_list">
+
+								</span>
+							</div>
+					  	</div>
+					</div>
+<!-- show reminder menu end -->
+
+<!-- add & edit reminder modal start-->
+					<div id="AEreminder" class="modal">
+					<!-- Modal content -->
+					  	<div class="modal-content" style="width: 60%;margin: auto;">
+						    <div class="modal-header">
+						      <span class="close_AEreminder">&times;</span>
+						      <h2 id="title_reminder">Add Reminder</h2>
+						    </div>
+							    <div class="modal-body">
+							      <table  style="margin: auto;width: 80%;">
+
+							      	<tr>
+							      		<td><input type="hidden" name="reminder_id" class="reminder_id form-control" id="reminder_id" value=""></td>
+							      	</tr>
+
+							      	<tr>
+							      		<td>
+											<select class="form-select" id="reminder_task_select" name="reminder_task_select" style="margin: 5px;" >
+										    	<option value="title_select_task">Select Task</option>
+										    	<?php 
+										    	while($num5 = mysqli_fetch_array($query5)){
+													$reminder_task_id = $num5['id'];
+													$reminder_task_name = $num5['task_name'];
+													$reminder_task_date = $num5['task_date'];
+													$reminder_task_time = $num5['task_time'];
+										    	?>
+										    		<option id="<?php echo $reminder_task_name;?>" name="<?php echo $reminder_task_name;?>" value="<?php echo $reminder_task_id;?>"><?php echo "Task : ".$reminder_task_name.","." Date : ".$reminder_task_date.","." Time : ".$reminder_task_time;?></option>
+										    	<?php 
+										    	}
+										    	?>
+										    </select>
+							      		</td>
+							      	</tr>
+
+									<tr>
+										<td><h5 style="color:#121212;">Remind In</h5></td>
+									</tr>
+									
+									<tr>
+							      		<td>
+											<label style="margin-left: 5px;color:black;"><h6>Date : </h6></label>
+							      			<input type="date" class="form-control" id="reminder_task_date" name="reminder_task_date" value="">
+							      		</td>
+							      	</tr>
+							      	
+									<tr>
+							      		<td>
+											<label style="margin-left: 5px;color:black;"><h6>Time : </h6></label>
+							      			<input type="time" class="form-control" id="reminder_task_time" name="reminder_task_time" value="">
+							      		</td>
+							      	</tr>
+
+									  <tr>
+							      		<td>
+											<select class="form-select" id="ringtone_id" name="ringtone_id" style="margin: 5px;" >
+										    	<option value="title_select_ringtone">Select Ringtone</option>
+										    	<?php 
+										    	while($num6 = mysqli_fetch_array($query6)){
+													$reminder_ringtone_id = $num6['id'];
+													$reminder_ringtone_name = $num6['ringtone_name'];
+										    	?>
+										    		<option id="<?php echo $reminder_ringtone_name;?>" name="<?php echo $reminder_ringtone_name;?>" value="<?php echo $reminder_ringtone_id;?>"><?php echo $reminder_ringtone_name;?></option>
+										    	<?php 
+										    	}
+										    	?>
+										    </select>
+							      		</td>
+							      	</tr>
+							      	</table>
+							    </div>
+							    
+							    <div class="modal-footer" style="background-color:#303030;">
+							      <input type="button" name="insert_reminder" class="insert_reminder logout" id="insert_reminder" value="ADD" onclick="insert_reminder()">
+							    </div>
+					  	</div>
+					</div>
+<!-- add & edit reminder modal end -->
+
+<!-- add & edit task modal start -->
 					<div id="myModal" class="modal">
 					<!-- Modal content -->
 					  	<div class="modal-content" style="width: 60%;margin: auto;">
@@ -175,19 +315,8 @@ include "../config/connection.php";
 	
 							      	<tr>
 							      		<td>
-							      			<!-- harus revisi -->
-							      			<select class="form-select" id="reminder_id" name="reminder_id" style="margin:5px;">
-										    	<option value="title_reminder">Reminder</option>
-										    	<?php 
-										    	while($num3 = mysqli_fetch_array($query3)){
-													$id_reminder = $num3['id'];
-													$reminder_time = $num3['reminder_time'];
-										    	?>
-										    		<option id="<?php echo $reminder_time;?>" name="<?php echo $reminder_time;?>" value="<?php echo $id_reminder;?>"><?php echo $reminder_time;?></option>
-										    	<?php 
-										    	}
-										    	?>
-										    </select>
+											<label style="margin-left: 5px;color:black;"><h6>Time : </h6></label>
+							      			<input type="time" class="form-control" id="task_time" name="task_time" value="">
 							      		</td>
 							      	</tr>
 	
@@ -206,7 +335,9 @@ include "../config/connection.php";
 						    </form>
 					  	</div>
 					</div>
-					
+<!-- add task modal end -->
+
+<!-- place for show expired task -->
 					<div class="row">
 						<div class="col-6"><h6>EXPIRED TASK</h6></div>
 					</div>
@@ -215,6 +346,7 @@ include "../config/connection.php";
 						<font color="#FEFEFE">Loading . . . . . . . . . . .</font>
 					</div>
 
+<!-- place for show active task -->
 					<div class="row">
 						<div class="col-6"><h6>ACTIVE TASK</h6></div>
 					</div>
@@ -223,6 +355,7 @@ include "../config/connection.php";
 						<font color="#FEFEFE">Loading . . . . . . . . . . .</font>
 					</div>
 
+<!-- place for show completed task -->
 					<div class="row">
 						<div class="col-6"><h6>COMPLETED TASK</h6></div>
 					</div>
@@ -238,6 +371,7 @@ include "../config/connection.php";
 <script src="assets/js/jquery-3.7.0.js"></script>
 <script src="https://kit.fontawesome.com/67a87c1aef.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
 <script src="assets/js/user.js"></script>
 
 <script>
@@ -246,7 +380,54 @@ include "../config/connection.php";
         get_data();
         completed_tasks();
 		expired_task();
-    });
+		show_profile();
+		check_reminder();
+		// setInterval('refreshPage()', 10000);
+	    });
+
+		// setTimeout(function(){
+		// window.location.reload(1);
+		// }, 10000);
+
+
+		// function refreshPage() { 
+		// 	location.reload(); 
+		// }
+
+// document.addEventListener("DOMContentLoaded", () => {
+// const audio = document.querySelector("audio");
+
+//   // Function to request audio playback permission
+//   function requestAudioPermission() {
+//     // Try to play the audio programmatically
+//     audio.play()
+//       .then(() => {
+//         // Permission granted, show the audio element
+//         audio.style.display = "block";
+//         // Pause the audio to avoid autoplaying on subsequent visits
+//         audio.pause();
+//       })
+//       .catch((err) => {
+//         console.error("Error accessing audio playback:", err);
+//       });
+//   }
+
+//   // Check if the user has already granted permission
+//   const audioPermissionStatus = localStorage.getItem("audioPermission");
+
+//   if (audioPermissionStatus !== "granted") {
+//     // Request audio playback permission if it's the user's first visit
+//     requestAudioPermission();
+
+//     // Cache the permission status in localStorage after requesting permission
+//     localStorage.setItem("audioPermission", "granted");
+//   } else {
+//     // Permission already granted, show the audio element
+//     audio.style.display = "block";
+//   }
+// });
+
+
 </script>
 </body>
 </html>

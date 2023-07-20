@@ -1,11 +1,7 @@
 <?php   
 include "../config/security.php";
 include "../config/connection.php";
-    $user_id = $_SESSION['id'];
-    $email = $_SESSION['email'];
-    $username = $_SESSION['username'];
-    $img = $_SESSION['img'];
-
+    
     $sql1 = "SELECT * FROM tbstatus";
 	$query1 = mysqli_query($conn,$sql1);
 ?>

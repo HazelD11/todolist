@@ -11,10 +11,10 @@
                     <td colspan="2"><h2>Welcome!</h2></td>
                 </tr>
                 <tr>
-                    <td>Email</td>
+                    <td>Username</td>
                     </tr>
                     <tr>
-                    <td><input type="text" name="email" id="email" class="email" placeholder="masukkan email anda"></td>
+                    <td><input type="text" name="username" id="username" class="email" placeholder="masukkan username anda"></td>
                     </tr>
                 </tr>
                 <tr>

@@ -8,10 +8,10 @@ if(isset($_SESSION['login'])){
 }
 
 if(isset($_POST['login'])){
-    if (isset($_POST['email']) && isset($_POST['password'])) {
-        $email = $_POST['email'];
+    if (isset($_POST['username']) && isset($_POST['password'])) {
+        $username = $_POST['username'];
         $password = md5($_POST['password']);
-        $sql = "SELECT * FROM tbuser WHERE email = '$email' AND password = '$password'";
+        $sql = "SELECT * FROM tbuser WHERE username = '$username' AND user_password = '$password'";
         $query = mysqli_query($conn, $sql);
                 
         if (mysqli_num_rows($query) > 0) {
@@ -19,22 +19,22 @@ if(isset($_POST['login'])){
 
             $status = $row['status'];
             $id = $row['id'];
-            $username = $row['username'];
-            $fullname = $row['fullname'];
+            // $username = $row['username'];
+            // $fullname = $row['fullname'];
             $pet_id = $row['pet_id'];
-            $img = $row['img'];
+            // $img = $row['img'];
             
             $_SESSION['id'] = $id;
-            $_SESSION['email'] = $email;
+            // $_SESSION['email'] = $email;
             $_SESSION['username'] = $username;
-            $_SESSION['fullname'] = $fullname;
+            // $_SESSION['fullname'] = $fullname;
             $_SESSION['pet_id'] = $pet_id;
-            $_SESSION['img'] = $img;
+            // $_SESSION['img'] = $img;
             if ($status == "admin") {
             // User is an admin (status = 1)
             ?>
                 <script>
-                    location.href = "../admin/index.php";
+                    // location.href = "../admin/index.php";
                 </script>
             <?php
                 exit();
