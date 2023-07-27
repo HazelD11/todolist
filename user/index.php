@@ -19,12 +19,17 @@ include "../config/connection.php";
 	$sql4 = "SELECT * FROM pet";
 	$query4 = mysqli_query($conn,$sql4);
 
-	$sql5 = "SELECT * FROM task WHERE status_id = 1";
+	$sql5 = "SELECT * FROM task WHERE status_id = 1 AND user_id=$user_id";
 	$query5 = mysqli_query($conn,$sql5);
 
 	$sql6 = "SELECT * FROM ringtone";
 	$query6 = mysqli_query($conn,$sql6);
 
+	$sql7 = "SELECT * FROM tbuser WHERE id NOT IN($user_id)";
+	$query7 = mysqli_query($conn,$sql7);
+
+	$sql8 = "SELECT * FROM collaborator WHERE user_id=$user_id";
+	$query8 = mysqli_query($conn,$sql8);
 	
 ?>
 
@@ -34,6 +39,7 @@ include "../config/connection.php";
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title></title>
+	<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 	<link rel="stylesheet" type="text/css" href="assets/css/style.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
@@ -261,8 +267,12 @@ include "../config/connection.php";
 							    <div class="modal-body">
 							      <table  style="margin: auto;width: 80%;">
 
-							      	<tr>
+								  	<tr>
 							      		<td><input type="hidden" name="id" class="id form-control" id="id" value=""></td>
+							      	</tr>
+									
+									<tr>
+							      		<td><input type="hidden" name="task_team" class="task_team form-control" id="task_team" value=""></td>
 							      	</tr>
 	
 							      	<tr>
@@ -319,7 +329,29 @@ include "../config/connection.php";
 							      			<input type="time" class="form-control" id="task_time" name="task_time" value="">
 							      		</td>
 							      	</tr>
-	
+									
+									<tr>
+										<td>
+											<input type="text" id="team_name" class="form-control" name="team_name" value="" placeholder="Insert Team Name">
+										</td>
+									</tr>
+									
+									<tr>
+										<td>
+											<select class="user_collab select2" name="user[]" id="select_user" multiple="multiple">
+											<?php 
+										    	while($num7 = mysqli_fetch_array($query7)){
+													$uid = $num7['id'];
+													$user_fullname = $num7['fullname'];
+										    	?>
+										    		<option value="<?php echo $uid;?>"><?php echo $user_fullname;?></option>
+										    	<?php 
+										    	}
+										    	?>
+											</select>
+										</td>
+									</tr>
+
 							      	<tr>
 							      		<td><input type="hidden" name="status_id" class="form-control" id="status_id" value=""></td>
 							      	</tr>
@@ -341,26 +373,55 @@ include "../config/connection.php";
 					<div class="row">
 						<div class="col-6"><h6>EXPIRED TASK</h6></div>
 					</div>
-
-					<div id="expired_tasks">
+<br>
+					<div id="expired_tasks" style="overflow-y: auto;max-height:250px;">
 						<font color="#FEFEFE">Loading . . . . . . . . . . .</font>
 					</div>
-
+<br>
 <!-- place for show active task -->
 					<div class="row">
 						<div class="col-6"><h6>ACTIVE TASK</h6></div>
 					</div>
+					
+					<br>
 
-					<div id="active_tasks">
+					<div id="active_tasks" style="overflow-y: auto;max-height:250px;">
 						<font color="#FEFEFE">Loading . . . . . . . . . . .</font>
 					</div>
+<br>
+<!-- place for show collaborator task -->
+					<div class="row">
+						<div class="col-6"><h6>COLLABORATOR TASK</h6>
+							<select class="form-select" id="collab_team" name="collab_team" style="margin:5px;">
+								<option value="title_team">Select Team</option>
+								<?php 
+								while($num8 = mysqli_fetch_array($query8)){
+									$team = $num8['team'];
+									$team_name = $num8['team_name'];
+								?>
+									<option id="<?php echo $team_name;?>" name="<?php echo $team_name;?>" value="<?php echo $team;?>"><?php echo $team_name;?></option>
+								<?php 
+								}
+								?>
+							</select>
+							<input type="button" name="filter_team" id="filter_team" class="logout" value="filter" onclick="collaborator_tasks()">
+						</div>
+					</div>
 
+					<br>
+					
+					<div id="collaborator_tasks" style="overflow-y: auto;max-height:250px;">
+						<font color="#FEFEFE">Loading . . . . . . . . . . .</font>
+					</div>
+<br>
 <!-- place for show completed task -->
 					<div class="row">
 						<div class="col-6"><h6>COMPLETED TASK</h6></div>
 					</div>
 
-					<div id="completed_task">
+					<br>
+
+					<div id="completed_task" style="overflow-y: auto;max-height:250px;">
 						<font color="#FEFEFE">Loading . . . . . . . . . . .</font>
 					</div>
 			</div>
@@ -369,6 +430,7 @@ include "../config/connection.php";
 </div>
 
 <script src="assets/js/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="https://kit.fontawesome.com/67a87c1aef.js" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.min.js"></script>
@@ -376,23 +438,31 @@ include "../config/connection.php";
 
 <script>
     $(document).ready(function() {
+		$('.user_collab').select2({
+			placeholder: 'Choose Collaborator',
+			dropdownParent: $('#myModal')
+		});
 		load_pet();
         get_data();
         completed_tasks();
 		expired_task();
+		collaborator_tasks();
 		show_profile();
 		check_reminder();
-		// setInterval('refreshPage()', 10000);
-	    });
+		// setInterval('refreshPage()', 5000);
+		
+	});
 
 		// setTimeout(function(){
 		// window.location.reload(1);
 		// }, 10000);
 
 
-		// function refreshPage() { 
-		// 	location.reload(); 
-		// }
+		function refreshPage() { 
+			// location.reload(); 
+		}
+
+
 
 // document.addEventListener("DOMContentLoaded", () => {
 // const audio = document.querySelector("audio");

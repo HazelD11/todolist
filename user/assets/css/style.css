@@ -167,3 +167,8 @@ div .todolist .row {
   -moz-box-shadow: 0px 0px 16px 0px #EFEFEF;
   box-shadow: 0px 0px 16px 0px #EFEFEF;
 }
+
+.select2-selection__choice__display, .select2-results__options{
+  color: #121212;
+}
+

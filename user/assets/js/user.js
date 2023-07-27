@@ -91,6 +91,9 @@ function add_task(){
       $("#priority_id").val("title_priority");
       $("#category_id").val("title_category");
       $("#task_time").val("title_reminder");
+      $("#team_name").val("");
+      // $("#select_user").val("");
+      $("#select_user").val([]).trigger("change");
       $("#status_id").val("");
 }
 
@@ -104,6 +107,9 @@ function insert_task(){
   var category_id = $("#category_id").val();
   var task_time = $("#task_time").val();
   var status_id = $("#status_id").val();
+  var collaborator = $("#select_user").val();
+  var team_name = $("#team_name").val();
+
   $.ajax({
     url: 'sv_task.php',
     method: 'POST',
@@ -115,6 +121,8 @@ function insert_task(){
       priority_id: priority_id,
       category_id: category_id,
       task_time: task_time,
+      collaborator:collaborator,
+      team_name:team_name,
       status_id: status_id,
       act: 'add'
     },
@@ -122,18 +130,21 @@ function insert_task(){
       get_data();
       completed_tasks();
       expired_task();
+      collaborator_tasks();
       modal.style.display = "none";
     }
+    
   });  
 }
 
 //show the form for edit task
-function edit_task(id){
+function edit_task(id,task_team){
   $.ajax({
     url: 'sv_task.php',
     method: 'POST',
     data: {
       id: id,
+      task_team: task_team,
       act: 'edit'
     },
     success: function(result) {
@@ -151,6 +162,11 @@ function edit_task(id){
       $("#category_id").val(data[7]);
       $("#task_time").val(data[8]);
       $("#status_id").val(data[9]);
+      $("#task_team").val(data[10]);
+      $("#team_name").val(data[11]);
+      // const a = JSON.parse(data[12]);
+      // const b = JSON.stringify(a);
+      // console.log(a);
       
       modal.style.display = "block";
       $('#tambah').unbind('click');
@@ -172,6 +188,9 @@ function update_task(){
   var category_id = $("#category_id").val();
   var task_time = $("#task_time").val();
   var status_id = $("#status_id").val();
+  var collaborator = $("#select_user").val();
+  var team_name = $("#team_name").val();
+  var task_team = $("#task_team").val();
   $.ajax({
     url: 'sv_task.php',
     method: 'POST',
@@ -185,32 +204,42 @@ function update_task(){
       category_id: category_id,
       task_time: task_time,
       status_id: status_id,
+      collaborator: collaborator,
+      team_name: team_name,
+      task_team: task_team,
       act: 'update'
     },
     success: function(result) {   
       get_data();
       completed_tasks();
       expired_task();
+      collaborator_tasks();
       modal.style.display = "none";   
     }
   });
 }
 
 //delete task
-function delete_task(task_id) {
-  $.ajax({
-    url: 'sv_task.php',
-    method: 'POST',
-    data: {
-      id: task_id,
-      act: 'delete'
-    },
-    success: function(result) {
-      get_data();
-      completed_tasks();
+function delete_task(task_id,task_team) {
+  let text = "You sure want to delete task?";
+  if (confirm(text) == true) {
+    $.ajax({
+      url: 'sv_task.php',
+      method: 'POST',
+      data: {
+        id: task_id,
+        task_team:task_team,
+        act: 'delete'
+      },
+      success: function(result) {
+        get_data();
+        completed_tasks();
+      collaborator_tasks();
       expired_task();
-    }
-  });
+      }
+    });
+  }
+  
 }
 
 //report||filter based on date function
@@ -250,6 +279,7 @@ function check_task(task_id){
       get_data();
       completed_tasks();
       load_pet();
+      collaborator_tasks();
       expired_task();
     }
   });  
@@ -268,6 +298,7 @@ function uncheck_task(task_id){
       get_data();
       completed_tasks();
       expired_task();
+      collaborator_tasks();
       load_pet();
     }
   });
@@ -283,6 +314,22 @@ function get_data(){
     },
     success: function( result ) {
       $("#active_tasks").html( result );
+    }
+  });
+}
+
+//show collaborator task
+function collaborator_tasks(){
+  var collab_team = $("#collab_team").val();
+  $.ajax({
+    url: 'sv_task.php',
+    method: 'POST',
+    data: {
+      collab_team:collab_team,
+      act: 'show_collab'
+    },
+    success: function( result ) {
+      $("#collaborator_tasks").html( result );
     }
   });
 }
@@ -524,17 +571,21 @@ function update_reminder(){
 
 //delete reminder
 function delete_reminder(reminder_id) {
-  $.ajax({
-    url: 'sv_task.php',
-    method: 'POST',
-    data: {
-      reminder_id: reminder_id,
-      act: 'delete_reminder'
-    },
-    success: function(result) {
-      remind_menu();
-    }
-  });
+  let text = "You sure want to delete reminder?";
+  if (confirm(text) == true) {
+    $.ajax({
+      url: 'sv_task.php',
+      method: 'POST',
+      data: {
+        reminder_id: reminder_id,
+        act: 'delete_reminder'
+      },
+      success: function(result) {
+        remind_menu();
+      }
+    });
+  } 
+  
 }
 
 //check reminder
